@@ -1,0 +1,139 @@
+{
+  "colors": {
+    "red": [
+      255,
+      0,
+      0
+    ],
+    "black": [
+      0,
+      0,
+      0
+    ],
+    "blue": [
+      0,
+      0,
+      255
+    ],
+    "lime": [
+      0,
+      255,
+      0
+    ],
+    "yellow": [
+      255,
+      255,
+      0
+    ],
+    "white": [
+      255,
+      255,
+      255
+    ],
+    "gray": [
+      128,
+      128,
+      128
+    ],
+    "green": [
+      0,
+      128,
+      0
+    ],
+    "cyan": [
+      0,
+      255,
+      255
+    ],
+    "aqua": [
+      0,
+      255,
+      255
+    ],
+    "zima_blue": [
+      22,
+      184,
+      243
+    ],
+    "github_green_4": [
+      57,
+      211,
+      83
+    ],
+    "github_green_3": [
+      38,
+      166,
+      65
+    ],
+    "github_green_2": [
+      0,
+      109,
+      50
+    ],
+    "github_green_1": [
+      12,
+      74,
+      42
+    ],
+    "github_inactive": [
+      22,
+      27,
+      34
+    ],
+    "github_background": [
+      13,
+      17,
+      23
+    ]
+  },
+  "resolutions": {
+    "hd": [
+      1280,
+      720
+    ],
+    "full_hd": [
+      1920,
+      1080
+    ],
+    "two_k": [
+      2560,
+      1440
+    ],
+    "four_k": [
+      3840,
+      2160
+    ],
+    "eight_k": [
+      7680,
+      4320
+    ],
+    "large_box": [
+      1300,
+      1300
+    ],
+    "medium_box": [
+      900,
+      900
+    ],
+    "small_box": [
+      500,
+      500
+    ],
+    "github_activity": [
+      1920,
+      265
+    ]
+  },
+  "icon": {
+    "folder": "assets",
+    "name": "icon.png"
+  },
+  "window_name": "Snake of Life",
+  "window_resolution": [
+    1300,
+    1300
+  ],
+  "game_ticks": 144,
+  "fps_cap": 400,
+  "updates_per_cycle": 1
+}
