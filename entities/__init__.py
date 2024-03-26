@@ -1,0 +1,1 @@
+from gol_table import GOLTable
