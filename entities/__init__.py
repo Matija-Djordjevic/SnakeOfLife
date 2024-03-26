@@ -1,1 +1,1 @@
-from gol_table import GOLTable
+from entities.gol_table_tmp import GOLTable
