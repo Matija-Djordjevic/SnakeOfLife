@@ -3,6 +3,9 @@ import pygame as pg
 from levels.base_level import BaseLevel
 
 class DevLevelWrapper():
+    BLACK = (0, 0, 0)
+    WHITE = (255, 255, 255)
+    
     def __init__(self, level: BaseLevel, clock: pg.time.Clock) -> None:
         self.level = level
         self.clock = clock
@@ -45,5 +48,11 @@ class DevLevelWrapper():
     
     def _handle_events(self, events: list[pg.event.Event]) -> None:
         for event in events:
-            if event.type == pg.KEYDOWN and event.key == pg.K_F2:
-                self._display_info = not self._display_info
+            if event.type == pg.KEYDOWN:
+                match event.key:
+                    case pg.K_F1: self._display_info = not self._display_info
+                    case pg.K_F2:
+                        blck, white = DevLevelWrapper.BLACK, DevLevelWrapper.WHITE
+                        self.font_color = blck if self.font_color == white else white
+                    case pg.K_F3:
+                        self._info_font.bold = True if not self._info_font.bold else False

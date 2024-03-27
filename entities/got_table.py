@@ -6,12 +6,18 @@ from numpy import typing as npt
 from numba import njit
 from typing import Optional
 
+import pygame as pg
+
+import grid 
+
 class GOLTable():
     ALIVE = True
     DEAD = False
     
-    def __init__(self, clmns: int, rows: int, loop: bool) -> None:
+    def __init__(self, clmns: int, rows: int, loop: bool, alive_color: tuple[int, int, int], dead_color: tuple[int, int, int]) -> None:
         self.loop = loop
+        self.alive_c = alive_color
+        self.dead_c = dead_color
         self.matrix = np.zeros(shape=(rows, clmns), dtype=np.bool_)
         self.t_matrix = self.matrix[:]
         
@@ -21,6 +27,11 @@ class GOLTable():
     def generation(self): return self.generation_count
 
     def evolve(self) -> None: Advancer.evolve(self)
+
+    def draw(self, grid: grid.Grid, surface: pg.Surface) -> None: Drawer.draw(self, grid, surface)
+
+    def draw_only_updt(self, grid: grid.Grid, surface: pg.Surface) -> None: Drawer.draw_only_updt(self, grid, surface)
+    
 
     @staticmethod
     def try_load_from_binary(f_path: str) -> Optional['GOLTable']: return Loader.try_load_from_binary(f_path)
@@ -222,3 +233,16 @@ class Loader():
                 return True
         finally:
             return False
+
+# beutify!
+class Drawer():
+    @staticmethod
+    def draw(table: GOLTable, grid: grid.Grid, surface: pg.Surface) -> None:
+        mtrx = table.matrix
+        h, w = mtrx.shape
+        
+        rows_clmns_colors = (
+            (row, clmn, table.alive_c if mtrx[row][clmn] else table.dead_c) for row in range(h) for clmn in range(w)
+        )
+        
+        grid.draw_colored_cells_to_screen(surface, rows_clmns_colors)
