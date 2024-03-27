@@ -6,8 +6,9 @@ import grid
 class GameOfLifeDemoLevel(BaseLevel):
     def __init__(self, surface: pg.Surface) -> None:
         super().__init__(surface)
-        self.rows, self.clmns = 50, 50
+        self.rows, self.clmns = 400, 400
         self.t: ents.GOLTable = ents.GOLTable(self.clmns, self.rows, True, (57, 211, 83), (22, 27, 34))
+        self.bkd_clr = (255, 255, 255)
         self.t.randomize_cells()
         self.grid = self.init_grid()
         
@@ -21,11 +22,11 @@ class GameOfLifeDemoLevel(BaseLevel):
     def init_grid(self) -> grid.Grid:
         return grid.GridBuilder()\
             .set_clmns_and_rows_count(self.clmns, self.rows)\
-            .set_available_width_and_height(1300, 1300)\
+            .set_available_width_and_height(*self.surface.get_size())\
             .set_draw_offsets(0, 0)\
-            .set_border_color_and_width((255, 255, 255), 10)\
+            .set_border_color_and_width(self.bkd_clr, 10)\
             .set_bkgd_color((0, 0, 0))\
-            .set_cell_padding(1)\
+            .set_cell_padding(0)\
             .set_color_cells_border_radius(0)\
             .keep_same_cell_width_and_height()\
             .force_consistent_cell_padding()\
