@@ -45,8 +45,8 @@ class GOLTable():
         alive_char = chr(ord('█'))
         dead_char = ' '
 
-        _, clmns = self.matrix.shape
-        s = ''.join([frame_char for _ in range(clmns + 2)])
+        w = self.matrix.shape[1]
+        s = ''.join([frame_char for _ in range(w + 2)])
         s += '\n'
         for row in self.matrix:
             s += frame_char
@@ -54,7 +54,7 @@ class GOLTable():
                 s += alive_char if cell else dead_char
             s += frame_char
             s += '\n'
-        s += ''.join([frame_char for _ in range(clmns + 2)])
+        s += ''.join([frame_char for _ in range(w + 2)])
 
         return s
     
@@ -222,4 +222,3 @@ class Loader():
                 return True
         finally:
             return False
-
