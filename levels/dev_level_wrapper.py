@@ -29,10 +29,11 @@ class DevLevelWrapper():
     def _do_display_info(self) -> None:
         ls = self._get_info_list()
 
+        s_x, s_y = 20, 20
         y_off = 0
         for el in ls:
             img = self._info_font.render(el, True, self.font_color)
-            self.level.surface.blit(img, (0, y_off))
+            self.level.surface.blit(img, (s_x, s_y + y_off))
             y_off +=  self.font_size
 
     def _get_info_list(self) -> list[str]:

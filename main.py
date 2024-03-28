@@ -33,7 +33,7 @@ def get_game_data() -> Any:
 
 def start_game() -> None:
     args = get_args()
-    chosen_lvl = 'gol-demo' if args.level is None else args.level[0]
+    chosen_lvl = 'sol-demo' if args.level is None else args.level[0]
 
     game_data = get_game_data()
     

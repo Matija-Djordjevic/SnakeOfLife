@@ -30,9 +30,6 @@ class GOLTable():
 
     def draw(self, grid: grid.Grid, surface: pg.Surface) -> None: Drawer.draw(self, grid, surface)
 
-    def draw_only_updt(self, grid: grid.Grid, surface: pg.Surface) -> None: Drawer.draw_only_updt(self, grid, surface)
-    
-
     @staticmethod
     def try_load_from_binary(f_path: str) -> Optional['GOLTable']: return Loader.try_load_from_binary(f_path)
  
