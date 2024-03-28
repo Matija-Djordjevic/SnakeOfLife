@@ -22,7 +22,7 @@ class SnakeOfLifeDemoLevel(BaseLevel):
         self.t_acc = 0
 
     def init_grid(self) -> grid.Grid:
-        builder = grid.GridBuilder()\
+        builder = grid.Builder()\
             .set_clmns_and_rows_count(self.clmns, self.rows)\
             .set_available_width_and_height(*self.surface.get_size())\
             .set_draw_offsets(0, 0)\

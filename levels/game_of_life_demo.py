@@ -20,7 +20,7 @@ class GameOfLifeDemoLevel(BaseLevel):
         self._info_font = pg.font.SysFont("Arial", size=self.font_size, bold=False)
         
     def init_grid(self) -> grid.Grid:
-        builder = grid.GridBuilder()\
+        builder = grid.Builder()\
             .set_clmns_and_rows_count(self.clmns, self.rows)\
             .set_available_width_and_height(*self.surface.get_size())\
             .set_draw_offsets(0, 0)\
@@ -56,5 +56,5 @@ class GameOfLifeDemoLevel(BaseLevel):
         gen_txt = f"Gen: {str(self.t.generation_count)}"
         img = self._info_font.render(gen_txt, True, self.font_color)
         bw = self.grid._options.border_width
-        h = self.grid._options.avail_height
+        _, h = self.grid.get_actual_grid_size()
         self.surface.blit(img, (bw, h - bw - self.font_size))

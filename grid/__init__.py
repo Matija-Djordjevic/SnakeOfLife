@@ -1,1 +1,1 @@
-from grid.grid import Grid, EmbededGrid, GridBuilder
+from grid.grid import Grid, EmbededGrid, Builder

@@ -28,61 +28,61 @@ class GridOptions():
         self.consistent_padding = False
         
 # split into many files?
-class GridBuilder():
+class Builder():
     def __init__(self) -> None:
         self._options = GridOptions()
         
-    def set_clmns_and_rows_count(self, clmns: int, rows: int) -> 'GridBuilder':
+    def set_clmns_and_rows_count(self, clmns: int, rows: int) -> 'Builder':
         if clmns <= 0 or rows <= 0:
             raise ValueError()
         self._options.rows, self._options.clmns = rows, clmns        
         return self
     
-    def set_draw_offsets(self, x_offset: int, y_offset: int) -> 'GridBuilder':
+    def set_draw_offsets(self, x_offset: int, y_offset: int) -> 'Builder':
         self._options.x_offset, self._options.y_offset = x_offset, y_offset
         return self
     
-    def set_available_width_and_height(self, avail_x: int, avail_y: int) -> 'GridBuilder':
+    def set_available_width_and_height(self, avail_x: int, avail_y: int) -> 'Builder':
         if avail_x <= 0 or avail_y <= 0:
             raise ValueError()
         self._options.avail_width, self._options.avail_height = avail_x, avail_y
         return self
     
-    def set_cell_padding(self, padding: int) -> 'GridBuilder':
+    def set_cell_padding(self, padding: int) -> 'Builder':
         if padding < 0:
             raise ValueError()
         self._options.cell_padding = padding
         return self
 
-    def set_border_color_and_width(self, color: tuple[int, int, int], width: int) -> 'GridBuilder':
+    def set_border_color_and_width(self, color: tuple[int, int, int], width: int) -> 'Builder':
         if width < 0 or self._invalid_color(*color):
             raise ValueError()
         self._options.border_color, self._options.border_width = color, width
         return self
     
-    def set_bkgd_color(self, color: tuple[int, int, int]) -> 'GridBuilder':
+    def set_bkgd_color(self, color: tuple[int, int, int]) -> 'Builder':
         if self._invalid_color(*color):
             raise ValueError()
         
         self._options.bkgd_color = color
         return self
     
-    def keep_same_cell_width_and_height(self) -> 'GridBuilder':
+    def keep_same_cell_width_and_height(self) -> 'Builder':
         self._options.same_cell_dims = True
         return self
     
-    def force_consistent_cell_padding(self) -> 'GridBuilder':
+    def force_consistent_cell_padding(self) -> 'Builder':
         self._options.consistent_padding = True
         return self
     
-    def set_color_cells_border_radius(self, radius: int) -> 'GridBuilder':
+    def set_color_cells_border_radius(self, radius: int) -> 'Builder':
         self._options.color_cells_border_radius = radius
         return self 
-        
+
     def _invalid_color(self, r: int, g: int, b: int) -> bool: return r < 0 or r > 255 or g < 0 or g > 255 or b < 0 or b > 255
-    
+
 class Grid():
-    def __init__(self, builder: GridBuilder) -> None:
+    def __init__(self, builder: Builder) -> None:
         # immutable for speed!
         self._options = builder._options
 
@@ -98,8 +98,10 @@ class Grid():
     
     def draw_colored_cells_to_screen(self, surface: pg.Surface, rows_clmns_colors: list[tuple[int, int, tuple[int, int, int]]]) -> None: GridDrawer.draw_colored_cells_to_screen(self, surface, rows_clmns_colors)
 
+    def get_actual_grid_size(self) -> tuple[int, int]: return GridDrawer.get_actual_grid_size(self)
+    
 class EmbededGrid(Grid):
-    def __init__(self, builder: GridBuilder, parent: Grid, row_in_parent: int, clmn_in_parent: int) -> None:
+    def __init__(self, builder: Builder, parent: Grid, row_in_parent: int, clmn_in_parent: int) -> None:
         '''
             This grid will have no offset :(
         '''
@@ -121,7 +123,8 @@ class GridDrawer:
     @staticmethod
     def draw_bkgd_and_border(grid: Grid, surface: pg.Surface) -> None:
         opt = grid._options
-        r = pg.rect.Rect(opt.x_offset, opt.y_offset, opt.avail_width, opt.avail_height)
+        w, h = GridDrawer.get_actual_grid_size(grid)
+        r = pg.rect.Rect(opt.x_offset, opt.y_offset, w, h)
         pg.draw.rect(surface, opt.border_color, r)
 
         r.top += opt.border_width
@@ -172,4 +175,13 @@ class GridDrawer:
             y_off = row * ah + const_y_off
             rect.x, rect.y = x_off, y_off
             pg.draw.rect(surface, color, rect, border_radius=radius)
-            
+    
+    @staticmethod
+    def get_actual_grid_size(grid: Grid) -> tuple[int, int]:
+        wpc, hpc = grid.get_available_cell_width_and_height()    
+        width, height = wpc * grid._options.clmns, hpc * grid._options.rows
+        
+        bw = grid._options.border_width
+        width, height = width + 2 * bw, height + 2 * bw
+        
+        return width, height

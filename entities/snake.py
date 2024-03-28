@@ -58,7 +58,7 @@ class GOLBodyPart(BodyPart):
         self.gol_table.draw(self.e_grid, surface)
     
     def get_e_grid(self) -> grid.EmbededGrid:
-        builder = grid.GridBuilder()\
+        builder = grid.Builder()\
             .set_clmns_and_rows_count(self.table_clmns, self.table_rows)\
             .set_border_color_and_width((0, 255, 0), 2)\
             .set_bkgd_color(self.bkd_clr)\
