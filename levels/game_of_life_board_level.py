@@ -4,9 +4,10 @@ import pygame as pg
 
 import entities as ents
 import grid
-class GameOfLifeDemoLevel(BaseLevel):
+class GameOfLifeBoardLevel(BaseLevel):
     def __init__(self, surface: pg.Surface) -> None:
         super().__init__(surface)
+        self.warmup()
         self.rows, self.clmns = 50, 50
         self.t: ents.GOLTable = ents.GOLTable(self.clmns, self.rows, True, (57, 211, 83), (22, 27, 34))
         self.bkd_clr = (255, 255, 255)
@@ -53,9 +54,12 @@ class GameOfLifeDemoLevel(BaseLevel):
             if event.type == pg.QUIT:
                 sys.exit()
 
-    def display_generation_count(self):    
+    def display_generation_count(self):
         gen_txt = f"Gen: {str(self.t.generation_count)}"
         img = self._info_font.render(gen_txt, True, self.font_color)
         bw = self.grid._options.border_width
         _, h = self.grid.get_actual_grid_size()
         self.surface.blit(img, (bw, h - bw - self.font_size))
+    
+    def warmup(self):
+        ents.GOLTable(10, 10, False, (0, 0, 0), (0, 0, 0)).evolve()

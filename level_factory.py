@@ -19,8 +19,8 @@ class LevelFactory():
     def _create_snake_of_life_demo(self) -> lsl.SnakeOfLifeDemoLevel:
         return lsl.SnakeOfLifeDemoLevel(self.surface)
     
-    def _create_game_of_life_demo(self) -> lsl.GameOfLifeDemoLevel:
-        return lsl.GameOfLifeDemoLevel(self.surface)
+    def _create_game_of_life_demo(self) -> lsl.GameOfLifeBoardLevel:
+        return lsl.GameOfLifeBoardLevel(self.surface)
         
         
     
