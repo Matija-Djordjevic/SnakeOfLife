@@ -69,6 +69,9 @@ class DevLevelWrapper():
     
     def _handle_events(self, events: list[pg.event.Event]) -> None:
         for event in events:
+            if event.type == pg.QUIT:
+                exit()
+
             if event.type == pg.KEYDOWN:
                 match event.key:
                     case pg.K_F1: self.show_info = not self.show_info

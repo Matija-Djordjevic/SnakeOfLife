@@ -8,12 +8,16 @@ import entities as ents
 import grid
 
 class SnakeOfLifeDemoLevel(BaseLevel):
-    def __init__(self, rows: int, clmns: int, width: int, height: int) -> None:
-        self.surface = pg.display.set_mode((width, height))
+    def __init__(self, rows: int, clmns: int, req_width: int, req_height: int) -> None:
+        super().__init__()
         self.warmup()
+        self.req_width, self.req_height = req_width, req_height
         self.rows, self.clmns = rows, clmns
-        self.bkd_clr = (255, 255, 255)
+        
         self.grid = self.init_grid()
+        
+        self.surface = pg.display.set_mode(self.grid.get_actual_grid_size())
+        
         self.snake = ents.MovingSnake(0, 0)\
             .add_body_part(ents.GOLBodyPart(0, 1, self.grid))\
             .add_body_part(ents.GOLBodyPart(0, 2, self.grid))\
@@ -32,9 +36,9 @@ class SnakeOfLifeDemoLevel(BaseLevel):
     def init_grid(self) -> grid.Grid:
         builder = grid.Builder()\
             .set_clmns_and_rows_count(self.clmns, self.rows)\
-            .set_available_width_and_height(*self.surface.get_size())\
+            .set_available_width_and_height(self.req_width, self.req_height)\
             .set_draw_offsets(0, 0)\
-            .set_border_color_and_width(self.bkd_clr, 10)\
+            .set_border_color_and_width((139,0,0), 10)\
             .set_bkgd_color((0, 0, 0))\
             .set_cell_padding(2)\
             .set_color_cells_border_radius(4)\
@@ -45,8 +49,6 @@ class SnakeOfLifeDemoLevel(BaseLevel):
         
     def handle_events(self, events: list[pg.event.Event]) -> None:
         for event in events:
-            if event.type == pg.QUIT:
-                exit()
             if event.type == pg.KEYDOWN:
                 match event.key:
                     case pg.K_s: self.snake.try_cnage_dir(ents.SnakeDirection.DOWN)
