@@ -82,5 +82,6 @@ class SnakeOfLifeDemoLevel(BaseLevel):
             self.snake.move(r, c)
         
     def draw(self) -> None:
+        self.surface.fill(0)
         self.snake.draw(self.surface, self.grid)
                 
