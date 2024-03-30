@@ -134,6 +134,6 @@
     1300
   ],
   "game_ticks": 144,
-  "fps_cap": 400,
+  "fps_cap": 60,
   "updates_per_cycle": 144
 }

@@ -37,12 +37,12 @@ class GOLBodyPart(BodyPart):
         super().__init__(row, clmn)
         self.ups = 10
         self.t_acc = 0
+        self.bkd_clr = (0, 0, 0)
         
-        self.table_rows, self.table_clmns = 7, 7
-        self.gol_table = ents.GOLTable(self.table_clmns, self.table_rows, True, (57, 211, 83), (22, 27, 34))
+        self.table_rows, self.table_clmns = 10, 10
+        self.gol_table = ents.GOLTable(self.table_clmns, self.table_rows, False, (57, 211, 83), self.bkd_clr)
         self.gol_table.randomize_cells()
         
-        self.bkd_clr = (0, 0, 0)
         self.parent_grid = parent_grid
         self.e_grid = self.get_e_grid()
         
@@ -70,28 +70,23 @@ class GOLBodyPart(BodyPart):
     def get_e_grid(self) -> grid.EmbededGrid:
         builder = grid.Builder()\
             .set_clmns_and_rows_count(self.table_clmns, self.table_rows)\
-            .set_border_color_and_width((0, 255, 0), 2)\
+            .set_border_color_and_width((0, 255, 0), 1)\
             .set_bkgd_color(self.bkd_clr)\
             .set_cell_padding(1)\
-            .set_color_cells_border_radius(1)\
-            .keep_same_cell_width_and_height()\
-            .force_consistent_cell_padding()
+            .set_color_cells_border_radius(0)\
             
         e_grid = grid.EmbededGrid(builder, self.parent_grid, self.row, self.clmn)
         
         return e_grid
-    
+
 class Snake(ents.BaseEntity):
-    def __init__(self) -> None:
+    def __init__(self, head_r, head_c) -> None:
         super().__init__()
-        color = (123, 123, 123)
         self.body = [
-            ColorBodyPart(0, 0, (0, 255, 0)),
-            ColorBodyPart(0, 1, color),
-            ColorBodyPart(0, 2, color),
+            ColorBodyPart(head_r, head_c, (0, 255, 0))
         ]
         
-    def is_biting_itself(self):
+    def is_biting_itself(self) -> bool:
         head_pos = self.body[0].get_pos()
         
         parts = (part for part in self.body)
@@ -103,20 +98,27 @@ class Snake(ents.BaseEntity):
         
         return False
         
-    def get_head_pos(self):
+    def get_head_pos(self) -> tuple[int, int]:
         return self.body[0].get_pos()
-
+    
+    def get_head(self) -> BodyPart:
+        return self.body[0]
+    
     def update(self, t_elapsed: float) -> bool:
         for part in self.body: part.update(t_elapsed)
+        
+        return True
         
     def draw(self, surface: pg.Surface, grid: grid.Grid) -> None:
         for part in self.body: part.draw(surface, grid)
     
-    def add_body_part(self, p: BodyPart):
+    def add_body_part(self, p: BodyPart) -> 'Snake':
         self.body.append(p)
         p.set_pos(*self.body[-1].get_pos())
+        
+        return self
     
-    def move(self, row: int, clmn: int) -> None:
+    def move(self, row: int, clmn: int) -> 'Snake':
         body = self.body
         
         next_row, next_clmn = row, clmn
@@ -124,36 +126,38 @@ class Snake(ents.BaseEntity):
         for part in body:
             next_row, next_clmn = part.move(next_row, next_clmn)
             
+        return self
+ 
+class SnakeDirection(IntEnum):
+    UP = 0,
+    LEFT = 1,
+    DOWN = 2,
+    RIGHT = 3 
+            
 class MovingSnake(Snake):
-    class Direction(IntEnum):
-        UP = 0,
-        LEFT = 1,
-        DOWN = 2,
-        RIGHT = 3
-
-    def __init__(self) -> None:
-        super().__init__()
-        self.incompetable = [
-            MovingSnake.Direction.DOWN,
-            MovingSnake.Direction.RIGHT,
-            MovingSnake.Direction.UP,
-            MovingSnake.Direction.LEFT
-        ]
-        self.offsets = [
-            (-1, 0),
-            (0, -1),
-            (1, 0),
-            (0, 1)
-        ]
-        
-        self.mps = 10
+    _INC_DIRS = [
+        SnakeDirection.DOWN,
+        SnakeDirection.RIGHT,
+        SnakeDirection.UP,
+        SnakeDirection.LEFT
+    ]
+    _DIR_OFFS = [
+        (-1, 0),
+        (0, -1),
+        (1, 0),
+        (0, 1)
+    ]
+    
+    def __init__(self, head_r, head_c) -> None:
+        super().__init__(head_r, head_c)
+        self.mps = 3
         self.t_acc = 0
         self.t_slice = 1. / self.mps
 
-        self.dir = MovingSnake.Direction.DOWN 
+        self.dir = SnakeDirection.DOWN 
 
-    def try_cnage_dir(self, nd: Direction) -> bool:
-        if self.incompetable[nd] == self.dir:
+    def try_cnage_dir(self, nd: SnakeDirection) -> bool:
+        if MovingSnake._INC_DIRS[nd] == self.dir:
             return False
         self.dir = nd
         return True
@@ -162,8 +166,10 @@ class MovingSnake(Snake):
         super().update(t_elapsed)
         self.t_acc += t_elapsed
         while self.t_acc > self.t_slice:
-            oh, ow = self.offsets[self.dir]
+            oh, ow = MovingSnake._DIR_OFFS[self.dir]
             h, w = self.get_head_pos()
             self.move(h + oh, w + ow)
 
             self.t_acc -= self.t_slice
+            
+        return True

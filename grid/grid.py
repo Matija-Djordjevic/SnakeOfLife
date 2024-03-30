@@ -83,9 +83,14 @@ class Builder():
 
 class Grid():
     def __init__(self, builder: Builder) -> None:
-        # immutable for speed!
         self._options = builder._options
 
+    @property
+    def rows(self): return self._options.rows
+    
+    @property
+    def clmns(self): return self._options.clmns
+    
     def draw_bkgd_and_border(self, surface: pg.Surface) -> None: GridDrawer.draw_bkgd_and_border(self, surface)
 
     def get_available_cell_width_and_height(self) -> tuple[float, float] | tuple[int, int]: return GridDrawer.get_available_cell_width_and_height(self)

@@ -2,30 +2,29 @@ import sys
 from levels.base_level import BaseLevel
 import pygame as pg
 
+import numpy as np 
+
 import entities as ents
 import grid
 
 class SnakeOfLifeDemoLevel(BaseLevel):
-    DIR_CHANGES = [
-
-    ]
-    
     def __init__(self, surface: pg.Surface) -> None:
         super().__init__(surface)
         self.warmup()
-        self.rows, self.clmns = 20, 20
+        self.rows, self.clmns = 15, 15
         self.bkd_clr = (255, 255, 255)
         self.grid = self.init_grid()
-
-        self.moving_snake = ents.MovingSnake()
-        self.moving_snake.add_body_part(ents.GOLBodyPart(4, 5, self.grid))
-        self.moving_snake.add_body_part(ents.GOLBodyPart(5, 5, self.grid))
-        self.moving_snake.add_body_part(ents.GOLBodyPart(6, 5, self.grid))
-        self.moving_snake.add_body_part(ents.GOLBodyPart(7, 5, self.grid))
-        self.moving_snake.add_body_part(ents.GOLBodyPart(8, 5, self.grid))
+        self.snake = ents.MovingSnake(0, 0)\
+            .add_body_part(ents.GOLBodyPart(0, 1, self.grid))\
+            .add_body_part(ents.GOLBodyPart(0, 2, self.grid))\
+            .add_body_part(ents.GOLBodyPart(0, 3, self.grid))\
+            .add_body_part(ents.GOLBodyPart(0, 4, self.grid))\
+            .add_body_part(ents.GOLBodyPart(0, 5, self.grid))
         
         self.ups = 10
         self.t_acc = 0
+        
+        self.food = None
         
     def warmup(self):
         ents.GOLTable(10, 10, False, (0, 0, 0), (0, 0, 0)).evolve()
@@ -50,40 +49,38 @@ class SnakeOfLifeDemoLevel(BaseLevel):
                 exit()
             if event.type == pg.KEYDOWN:
                 match event.key:
-                    case pg.K_s: self.moving_snake.try_cnage_dir(ents.MovingSnake.Direction.DOWN)
-                    case pg.K_d: self.moving_snake.try_cnage_dir(ents.MovingSnake.Direction.RIGHT)
-                    case pg.K_w: self.moving_snake.try_cnage_dir(ents.MovingSnake.Direction.UP)
-                    case pg.K_a: self.moving_snake.try_cnage_dir(ents.MovingSnake.Direction.LEFT)
+                    case pg.K_s: self.snake.try_cnage_dir(ents.SnakeDirection.DOWN)
+                    case pg.K_d: self.snake.try_cnage_dir(ents.SnakeDirection.RIGHT)
+                    case pg.K_w: self.snake.try_cnage_dir(ents.SnakeDirection.UP)
+                    case pg.K_a: self.snake.try_cnage_dir(ents.SnakeDirection.LEFT)
         
     def update(self, t_elapsed: float, events: list[pg.event.Event]) -> bool:
+        snake = self.snake
         self.handle_events(events)
-        self.moving_snake.update(t_elapsed)
-        self.adj_snake()
-        if self.moving_snake.is_biting_itself():
-            sys.exit()
+        snake.update(t_elapsed)
+        self.adj_snake()        
         
-        if self.moving_snake.body[0].get_pos() == (0, 0):
-            r, c = self.moving_snake.body[-1].get_pos()
-            self.moving_snake.add_body_part(ents.ColorBodyPart(r, c, (12, 156, 255)))
+        if self.food is None:
+            r, c = self.grid.rows, self.grid.clmns
+            pos = np.random.randint(r), np.random.randint(c)
+            
+        
+        if snake.is_biting_itself():
+            sys.exit()
             
     def adj_snake(self):
-        r, c = self.moving_snake.body[0].get_pos()
-        tr, tc = r, c
+        tr, tc = r, c = self.snake.body[0].get_pos()
         gw, gh = self.grid._options.clmns, self.grid._options.rows
         
-        if r == gh:
-            r = 0
-        if r == -1:
-            r = gh - 1
+        if r >= gh: r = 0
+        if r < 0: r = gh - 1
         
-        if c == gw:
-            c = 0
-        if c == -1:
-            c = gw - 1
-        
+        if c >= gw: c = 0
+        if c < 0: c = gw - 1
+
         if (tr, tc) != (r, c):
-            self.moving_snake.move(r, c)
+            self.snake.move(r, c)
         
     def draw(self) -> None:
-        self.moving_snake.draw(self.surface, self.grid)
+        self.snake.draw(self.surface, self.grid)
                 
