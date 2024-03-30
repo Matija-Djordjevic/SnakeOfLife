@@ -50,9 +50,7 @@ def start_game() -> None:
     
     lvl_factry = LevelFactory()
     curr_lvl = lvl_factry.create_level(chosen_lvl)
-        
-    #screen = pg.display.set_mode(game_data['window_resolution'])
-    
+
     t_acc = 0.
     t_slice = 1. / game_data['game_ticks']
     max_fps = game_data['fps_cap']
@@ -75,7 +73,6 @@ def start_game() -> None:
 
             t_acc, ups_left = t_acc - t_slice, ups_left - 1
         
-        curr_lvl.surface.fill(0)
         curr_lvl.draw()
         pg.display.update()
         

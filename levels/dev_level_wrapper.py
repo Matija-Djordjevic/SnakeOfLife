@@ -29,9 +29,6 @@ class DevLevelWrapper():
         
         self.f_info = _FontInfo('Arial', 40, True)
 
-    @property
-    def surface(self): return self.level.surface
-
     def update(self, t_elapsed: float, events: list[pg.event.Event]) -> bool:
         self._handle_events(events)
         
