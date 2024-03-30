@@ -11,7 +11,7 @@ class SnakeOfLifeDemoLevel(BaseLevel):
         self.bkd_clr = (255, 255, 255)
         self.grid = self.init_grid()
 
-        self.snake = ents.Snake()
+        self.snake = ents.MovingSnake()
         self.snake.add_body_part(ents.GOLBodyPart(4, 5, self.grid))
         self.snake.add_body_part(ents.GOLBodyPart(5, 5, self.grid))
         self.snake.add_body_part(ents.GOLBodyPart(6, 5, self.grid))

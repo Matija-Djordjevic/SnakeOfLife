@@ -130,8 +130,8 @@
   },
   "window_name": "Snake of Life",
   "window_resolution": [
-    1300,
-    1300
+    1000,
+    800
   ],
   "game_ticks": 144,
   "fps_cap": 400,

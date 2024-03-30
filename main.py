@@ -1,3 +1,4 @@
+import sys
 import pygame as pg
 import json
 import argparse
@@ -24,10 +25,10 @@ def get_args() -> argparse.Namespace:
 
 def get_game_data() -> Any:
     try:
-        with open(DATA_FILE_PATH, 'r') as f:
+        with open(DATA_FILE_PATH, 'r', encoding='utf-8') as f:
             game_data = json.load(f)
     except Exception as e:
-        exit(e)
+        sys.exit(e)
     
     return game_data
 
@@ -43,7 +44,7 @@ def start_game() -> None:
     icon_path = os.path.join(game_data['icon']['folder'], game_data['icon']['name'])
     icon = pg.image.load(icon_path)
     pg.display.set_icon(icon)
-    
+
     pg.display.set_caption(game_data['window_name'])
     
     screen = pg.display.set_mode(game_data['window_resolution'])
@@ -58,7 +59,7 @@ def start_game() -> None:
     
     curr_lvl = DevLevelWrapper(curr_lvl, clock)
     clock.tick() # if we lost any time setting up levels
-    
+
     while True:
         t_elapsed = clock.tick(max_fps) / 1_000
         t_acc += t_elapsed
@@ -68,7 +69,7 @@ def start_game() -> None:
             events = pg.event.get() # TODO to seperate thread
             done = curr_lvl.update(t_elapsed, events)
             if done:
-                raise NotImplemented    
+                raise NotImplementedError
 
             t_acc, ups_left = t_acc - t_slice, ups_left - 1
         

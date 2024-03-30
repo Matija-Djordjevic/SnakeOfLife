@@ -1,3 +1,4 @@
+import sys
 from levels.base_level import BaseLevel
 import pygame as pg
 
@@ -50,7 +51,7 @@ class GameOfLifeDemoLevel(BaseLevel):
     def const_events(self, events: list[pg.event.Event]) -> None:
         for event in events:
             if event.type == pg.QUIT:
-                exit()
+                sys.exit()
 
     def display_generation_count(self):    
         gen_txt = f"Gen: {str(self.t.generation_count)}"

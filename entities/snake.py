@@ -50,8 +50,10 @@ class GOLBodyPart(BodyPart):
             self.t_acc -= t_slice
     
     def move(self, row: int, clmn: int) -> tuple[int, int]:
+        oldr, oldc = self.row, self.clmn
         super().move(row, clmn)
         self.e_grid.move_to(row, clmn)
+        return oldr, oldc
     
     def draw(self, surface: pg.Surface, grid: grid.Grid) -> None:
         self.e_grid.draw_bkgd_and_border(surface)
@@ -87,10 +89,11 @@ class Snake(ents.BaseEntity):
             ColorBodyPart(3, 5, color),
         ]
     
+    def get_head_pos(self):
+        return self.body[0].get_pos()
+
     def update(self, t_elapsed: float) -> bool:
         for part in self.body: part.update(t_elapsed)
-        #r, c = self.body[0].get_pos()
-        #self.move(r, c + 1)
         
     def draw(self, surface: pg.Surface, grid: grid.Grid) -> None:
         for part in self.body: part.draw(surface, grid)
@@ -104,3 +107,46 @@ class Snake(ents.BaseEntity):
         next_row, next_clmn = row, clmn
         for part in body:
             next_row, next_clmn = part.move(next_row, next_clmn)
+
+from enum import IntEnum
+class MovingSnake(Snake):
+    class Direction(IntEnum):
+        LEFT = 0,
+        UP = 1,
+        DOWN = 2,
+        RIGHT = 3
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.incompetable = [
+            MovingSnake.Direction.DOWN,
+            MovingSnake.Direction.RIGHT,
+            MovingSnake.Direction.UP,
+            MovingSnake.Direction.LEFT
+        ]
+        self.offsets = [
+            (-1, 0),
+            (0, -1),
+            (1, 0),
+            (0, 1)
+        ]
+        self.mps = 2
+        self.t_acc = 0
+        self.t_slice = 1. / self.mps
+
+        self.dir = MovingSnake.Direction.DOWN 
+
+    def try_cnage_dir(self, nd: Direction) -> bool:
+        if self.incompetable[nd] == self.dir:
+            return False
+        self.dir = nd
+        return True
+
+    def update(self, t_elapsed: float) -> bool:
+        self.t_acc += t_elapsed
+        while self.t_acc > self.t_slice:
+            ow, oh = self.offsets[self.dir]
+            w, h = self.get_head_pos()  
+            self.move(h + oh, w + ow)
+
+            self.t_acc -= self.t_slice
