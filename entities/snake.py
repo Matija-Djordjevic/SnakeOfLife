@@ -1,6 +1,7 @@
 import pygame as pg
-
 import entities as ents
+
+from enum import IntEnum
 
 import grid
 
@@ -17,6 +18,9 @@ class BodyPart(ents.BaseEntity):
     def get_pos(self) -> tuple[int, int]:
         return self.row, self.clmn
     
+    def set_pos(self, row: int, clmn: int) -> None:
+        self.row, self.clmn = row, clmn
+    
 class ColorBodyPart(BodyPart):
     def __init__(self, row: int, clmn: int, color: tuple[int, int, int]) -> None:
         super().__init__(row, clmn)
@@ -31,7 +35,7 @@ class ColorBodyPart(BodyPart):
 class GOLBodyPart(BodyPart):
     def __init__(self, row: int, clmn: int, parent_grid: grid.Grid) -> None:
         super().__init__(row, clmn)
-        self.ups = 6
+        self.ups = 10
         self.t_acc = 0
         
         self.table_rows, self.table_clmns = 7, 7
@@ -54,6 +58,10 @@ class GOLBodyPart(BodyPart):
         super().move(row, clmn)
         self.e_grid.move_to(row, clmn)
         return oldr, oldc
+    
+    def set_pos(self, row: int, clmn: int):
+        super().set_pos(row, clmn)
+        self.e_grid.move_to(row, clmn)
     
     def draw(self, surface: pg.Surface, grid: grid.Grid) -> None:
         self.e_grid.draw_bkgd_and_border(surface)
@@ -81,14 +89,20 @@ class Snake(ents.BaseEntity):
             ColorBodyPart(0, 0, (0, 255, 0)),
             ColorBodyPart(0, 1, color),
             ColorBodyPart(0, 2, color),
-            ColorBodyPart(0, 3, color),
-            ColorBodyPart(0, 4, color),
-            ColorBodyPart(0, 5, color),
-            ColorBodyPart(1, 5, color),
-            ColorBodyPart(2, 5, color),
-            ColorBodyPart(3, 5, color),
         ]
-    
+        
+    def is_biting_itself(self):
+        head_pos = self.body[0].get_pos()
+        
+        parts = (part for part in self.body)
+        next(parts) # skip head
+        
+        for part in parts:
+            if part.get_pos() == head_pos:
+                return True
+        
+        return False
+        
     def get_head_pos(self):
         return self.body[0].get_pos()
 
@@ -100,19 +114,20 @@ class Snake(ents.BaseEntity):
     
     def add_body_part(self, p: BodyPart):
         self.body.append(p)
+        p.set_pos(*self.body[-1].get_pos())
     
     def move(self, row: int, clmn: int) -> None:
         body = self.body
         
         next_row, next_clmn = row, clmn
+
         for part in body:
             next_row, next_clmn = part.move(next_row, next_clmn)
-
-from enum import IntEnum
+            
 class MovingSnake(Snake):
     class Direction(IntEnum):
-        LEFT = 0,
-        UP = 1,
+        UP = 0,
+        LEFT = 1,
         DOWN = 2,
         RIGHT = 3
 
@@ -130,7 +145,8 @@ class MovingSnake(Snake):
             (1, 0),
             (0, 1)
         ]
-        self.mps = 2
+        
+        self.mps = 10
         self.t_acc = 0
         self.t_slice = 1. / self.mps
 
@@ -143,10 +159,11 @@ class MovingSnake(Snake):
         return True
 
     def update(self, t_elapsed: float) -> bool:
+        super().update(t_elapsed)
         self.t_acc += t_elapsed
         while self.t_acc > self.t_slice:
-            ow, oh = self.offsets[self.dir]
-            w, h = self.get_head_pos()  
+            oh, ow = self.offsets[self.dir]
+            h, w = self.get_head_pos()
             self.move(h + oh, w + ow)
 
             self.t_acc -= self.t_slice

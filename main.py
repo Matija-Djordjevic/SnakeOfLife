@@ -49,22 +49,23 @@ def start_game() -> None:
     
     screen = pg.display.set_mode(game_data['window_resolution'])
     lvl_factry = LevelFactory(screen)
-    curr_lvl = lvl_factry.create_level(chosen_lvl)
         
-    clock = pg.time.Clock()
     t_acc = 0.
     t_slice = 1. / game_data['game_ticks']
     max_fps = game_data['fps_cap']
     max_ups = game_data['updates_per_cycle']
     
+    clock = pg.time.Clock()
+    curr_lvl = lvl_factry.create_level(chosen_lvl)
     curr_lvl = DevLevelWrapper(curr_lvl, clock)
-    clock.tick() # if we lost any time setting up levels
+    clock.tick()
 
     while True:
         t_elapsed = clock.tick(max_fps) / 1_000
         t_acc += t_elapsed
         
         ups_left = max_ups
+        print(t_elapsed)
         while t_acc > t_slice and ups_left != 0:
             events = pg.event.get() # TODO to seperate thread
             done = curr_lvl.update(t_elapsed, events)
