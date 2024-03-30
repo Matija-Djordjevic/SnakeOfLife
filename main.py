@@ -65,7 +65,6 @@ def start_game() -> None:
         t_acc += t_elapsed
         
         ups_left = max_ups
-        print(t_elapsed)
         while t_acc > t_slice and ups_left != 0:
             events = pg.event.get() # TODO to seperate thread
             done = curr_lvl.update(t_elapsed, events)
