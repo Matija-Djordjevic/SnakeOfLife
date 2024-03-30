@@ -1,9 +1,11 @@
-from levels.base_level import BaseLevel
 import pygame as pg
 
-class GitActivity(BaseLevel):
-    def __init__(self, surface: pg.Surface) -> None:
-        super().__init__(surface)
+import levels
+
+class GitActivity(levels.BaseLevel):
+    def __init__(self) -> None:
+        self.surface = ...
+        self.gol_board_lvl = levels.GameOfLifeBoardLevel(self.surface, 53, 7)
 
     def update(self, t_elapsed: float, events: list[pg.event.Event]) -> bool:
         raise NotImplemented

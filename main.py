@@ -47,16 +47,18 @@ def start_game() -> None:
 
     pg.display.set_caption(game_data['window_name'])
     
-    screen = pg.display.set_mode(game_data['window_resolution'])
-    lvl_factry = LevelFactory(screen)
+    
+    lvl_factry = LevelFactory()
+    curr_lvl = lvl_factry.create_level(chosen_lvl)
         
+    #screen = pg.display.set_mode(game_data['window_resolution'])
+    
     t_acc = 0.
     t_slice = 1. / game_data['game_ticks']
     max_fps = game_data['fps_cap']
     max_ups = game_data['updates_per_cycle']
     
     clock = pg.time.Clock()
-    curr_lvl = lvl_factry.create_level(chosen_lvl)
     curr_lvl = DevLevelWrapper(curr_lvl, clock)
     clock.tick()
 
@@ -73,7 +75,7 @@ def start_game() -> None:
 
             t_acc, ups_left = t_acc - t_slice, ups_left - 1
         
-        screen.fill(0)
+        curr_lvl.surface.fill(0)
         curr_lvl.draw()
         pg.display.update()
         

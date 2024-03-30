@@ -5,10 +5,11 @@ import pygame as pg
 import entities as ents
 import grid
 class GameOfLifeBoardLevel(BaseLevel):
-    def __init__(self, surface: pg.Surface) -> None:
-        super().__init__(surface)
+    def __init__(self, rows: int, clmns: int, width: int, height: int) -> None:
+        self.surface = pg.display.set_mode((width, height))
+        
         self.warmup()
-        self.rows, self.clmns = 50, 50
+        self.rows, self.clmns = rows, clmns
         self.t: ents.GOLTable = ents.GOLTable(self.clmns, self.rows, True, (57, 211, 83), (22, 27, 34))
         self.bkd_clr = (255, 255, 255)
         self.t.randomize_cells()
@@ -20,7 +21,7 @@ class GameOfLifeBoardLevel(BaseLevel):
         self.font_size = 45
         self.font_color = (57, 211, 83)
         self._info_font = pg.font.SysFont("Arial", size=self.font_size, bold=False)
-        
+
     def init_grid(self) -> grid.Grid:
         builder = grid.Builder()\
             .set_clmns_and_rows_count(self.clmns, self.rows)\

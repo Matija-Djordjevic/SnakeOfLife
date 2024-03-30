@@ -8,10 +8,10 @@ import entities as ents
 import grid
 
 class SnakeOfLifeDemoLevel(BaseLevel):
-    def __init__(self, surface: pg.Surface) -> None:
-        super().__init__(surface)
+    def __init__(self, rows: int, clmns: int, width: int, height: int) -> None:
+        self.surface = pg.display.set_mode((width, height))
         self.warmup()
-        self.rows, self.clmns = 15, 15
+        self.rows, self.clmns = rows, clmns
         self.bkd_clr = (255, 255, 255)
         self.grid = self.init_grid()
         self.snake = ents.MovingSnake(0, 0)\
@@ -25,7 +25,7 @@ class SnakeOfLifeDemoLevel(BaseLevel):
         self.t_acc = 0
         
         self.food = None
-        
+    
     def warmup(self):
         ents.GOLTable(10, 10, False, (0, 0, 0), (0, 0, 0)).evolve()
     

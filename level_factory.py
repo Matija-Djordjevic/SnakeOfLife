@@ -3,8 +3,8 @@ import levels as lsl
 import pygame as pg
 
 class LevelFactory():
-    def __init__(self, surface: pg.Surface) -> None:
-        self.surface = surface
+    def __init__(self) -> None:
+        pass
     
     def create_level(self, choice: str) -> lsl.BaseLevel:
         match choice:
@@ -14,13 +14,13 @@ class LevelFactory():
             case _: raise ValueError()
     
     def _create_git_activity_level(self) -> lsl.GitActivity:
-        return lsl.GitActivity(self.surface)
+        return lsl.GitActivity()
     
     def _create_snake_of_life_demo(self) -> lsl.SnakeOfLifeDemoLevel:
-        return lsl.SnakeOfLifeDemoLevel(self.surface)
+        return lsl.SnakeOfLifeDemoLevel()
     
     def _create_game_of_life_demo(self) -> lsl.GameOfLifeBoardLevel:
-        return lsl.GameOfLifeBoardLevel(self.surface)
+        return lsl.GameOfLifeBoardLevel(25, 25, 1300, 1300)
         
         
     
