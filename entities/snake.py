@@ -9,10 +9,13 @@ from grid import Builder as grid_Builder
 
 from abc import ABC, abstractmethod
 
-class BodyPart(ents.BaseEntity):
+from collections import deque
+from typing import Deque
+
+class BodyPart(ents.BaseEntity, ABC):
     def __init__(self, row: int, clmn: int) -> None:
-        self.row, self.clmn = row, clmn
         super().__init__()
+        self.row, self.clmn = row, clmn
 
     def get_pos(self) -> tuple[int, int]:
         return self.row, self.clmn
@@ -58,12 +61,6 @@ class GOLBodyPart(BodyPart):
             self.gol_table.evolve()
             self.t_acc -= t_slice
     
-    def move(self, row: int, clmn: int) -> tuple[int, int]:
-        oldr, oldc = self.row, self.clmn
-        super().move(row, clmn)
-        self.e_grid.move_to(row, clmn)
-        return oldr, oldc
-    
     def set_pos(self, row_clmn: tuple[int, int]) -> tuple[int, int]:
         old_pos = self.get_pos()
         self.row, self.clmn = row_clmn
@@ -92,47 +89,54 @@ class Snake(ents.BaseEntity):
         self.body = [
             ColorBodyPart(head_r, head_c, (0, 255, 0))
         ]
+        self.pending_body: Deque[BodyPart] = deque()
+    
+    @property
+    def head(self): return self.body[0]
+    
+    @property
+    def tail_tip(self): return self.body[-1]
+    
+    @property
+    def length(self): return len(self.body)
         
-    def is_biting_itself(self) -> bool:
-        head_pos = self.body[0].get_pos()
+    def biting_tail(self) -> bool:
+        tail = (part for part in self.body)
+        next(tail) # skip head
         
-        parts = (part for part in self.body)
-        next(parts) # skip head
-        
-        for part in parts:
-            if part.get_pos() == head_pos:
-                return True
+        head_pos = self.head.get_pos()
+        for part in tail:
+            if part.get_pos() == head_pos: return True
         
         return False
-        
-    def get_head_pos(self) -> tuple[int, int]:
-        return self.body[0].get_pos()
     
     def get_head(self) -> BodyPart:
         return self.body[0]
     
     def update(self, t_elapsed: float) -> bool:
         for part in self.body: part.update(t_elapsed)
-        
         return True
         
     def draw(self, surface: pg.Surface, grid: grid_Grid) -> None:
         for part in self.body: part.draw(surface, grid)
     
-    def add_body_part(self, p: BodyPart) -> 'Snake':
-        self.body.append(p)
-        p.set_pos(self.body[-1].get_pos())
-        
+    def add_parts(self, p: list[BodyPart]) -> 'Snake':
+        self.pending_body.extend(p)
         return self
     
     def move(self, row: int, clmn: int) -> 'Snake':
         body = self.body
         
-        next_row, next_clmn = row, clmn
+        next_pos = (row, clmn)
 
         for part in body:
-            next_row, next_clmn = part.set_pos((next_row, next_clmn))
-            
+            next_pos = part.set_pos(next_pos)
+        
+        if len(self.pending_body) != 0:
+            pp = self.pending_body.popleft()
+            pp.set_pos(next_pos)
+            self.body.append(pp)
+        
         return self
  
 class SnakeDirection(IntEnum):
@@ -174,7 +178,7 @@ class MovingSnake(Snake):
         self.t_acc += t_elapsed
         while self.t_acc > self.t_slice:
             oh, ow = MovingSnake._DIR_OFFS[self.dir]
-            h, w = self.get_head_pos()
+            h, w = self.head.get_pos()
             self.move(h + oh, w + ow)
 
             self.t_acc -= self.t_slice

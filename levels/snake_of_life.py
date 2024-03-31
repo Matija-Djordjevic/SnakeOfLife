@@ -8,6 +8,7 @@ from grid import Grid as gird_Grid
 from grid import Builder as grid_Builder
 
 from entities import GOLBodyPart as entities_GOLBodyPart
+from entities import ColorBodyPart as entities_ColorBodyPart
 from entities import MovingSnake as entities_MovingSnake
 from entities import SnakeDirection as entities_SnakeDirection
 from entities import GOLTable as entities_GOLTable
@@ -24,12 +25,23 @@ class SnakeOfLifeDemoLevel(BaseLevel):
         self.surface = pg.display.set_mode(self.grid.get_actual_grid_size())
         
         self.snake = entities_MovingSnake(0, 0)\
-            .add_body_part(entities_GOLBodyPart(0, 1, self.grid))\
-            .add_body_part(entities_GOLBodyPart(0, 2, self.grid))\
-            .add_body_part(entities_GOLBodyPart(0, 3, self.grid))\
-            .add_body_part(entities_GOLBodyPart(0, 4, self.grid))\
-            .add_body_part(entities_GOLBodyPart(0, 5, self.grid))
-        
+            .add_parts([
+                entities_GOLBodyPart(0, 1, self.grid),
+                entities_GOLBodyPart(0, 2, self.grid),
+                entities_GOLBodyPart(0, 3, self.grid),
+                entities_ColorBodyPart(0, 4, (1, 123, 232)),
+                entities_GOLBodyPart(0, 5, self.grid),
+                entities_GOLBodyPart(0, 6, self.grid),
+                entities_GOLBodyPart(0, 6, self.grid),
+                entities_GOLBodyPart(0, 6, self.grid),
+                entities_GOLBodyPart(0, 6, self.grid),
+                entities_GOLBodyPart(0, 6, self.grid),
+                entities_GOLBodyPart(0, 6, self.grid),
+                entities_GOLBodyPart(0, 6, self.grid),
+                entities_GOLBodyPart(0, 6, self.grid),
+                entities_GOLBodyPart(0, 6, self.grid),
+                entities_GOLBodyPart(0, 6, self.grid)
+            ])
         self.ups = 10
         self.t_acc = 0
         
@@ -72,7 +84,7 @@ class SnakeOfLifeDemoLevel(BaseLevel):
             pos = np.random.randint(r), np.random.randint(c)
             
         
-        if snake.is_biting_itself():
+        if snake.biting_tail():
             sys.exit()
             
     def adj_snake(self):
