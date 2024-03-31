@@ -12,6 +12,10 @@ from abc import ABC, abstractmethod
 from collections import deque
 from typing import Deque
 
+import itertools
+
+from typing import Iterator
+
 class BodyPart(ents.BaseEntity, ABC):
     def __init__(self, row: int, clmn: int) -> None:
         super().__init__()
@@ -86,26 +90,21 @@ class GOLBodyPart(BodyPart):
 class Snake(ents.BaseEntity):
     def __init__(self, head_r, head_c) -> None:
         super().__init__()
-        self.body = [
-            ColorBodyPart(head_r, head_c, (0, 255, 0))
-        ]
+        self.body = [ ColorBodyPart(head_r, head_c, (0, 255, 0)) ]
         self.pending_body: Deque[BodyPart] = deque()
     
     @property
-    def head(self): return self.body[0]
-    
-    @property
-    def tail_tip(self): return self.body[-1]
-    
-    @property
     def length(self): return len(self.body)
+    
+    def get_tail_tip(self) -> BodyPart: return self.body[-1]
+    
+    def get_head(self) -> BodyPart: return self.body[0]
+    
+    def get_tail(self) -> Iterator[BodyPart]: return itertools.islice(self.body, 1, len(self.body))
         
     def biting_tail(self) -> bool:
-        tail = (part for part in self.body)
-        next(tail) # skip head
-        
-        head_pos = self.head.get_pos()
-        for part in tail:
+        head_pos = self.get_head().get_pos()
+        for part in self.get_tail():
             if part.get_pos() == head_pos: return True
         
         return False
@@ -177,9 +176,27 @@ class MovingSnake(Snake):
         self.t_acc += t_elapsed
         while self.t_acc > self.t_slice:
             oh, ow = MovingSnake._OFFS[self.dir]
-            h, w = self.head.get_pos()
+            h, w = self.get_head().get_pos()
             self.move(h + oh, w + ow)
 
             self.t_acc -= self.t_slice
             
         return True
+
+class FogSnake(MovingSnake):
+    def __init__(self, head_r, head_c, view_radius: int) -> None:
+        super().__init__(head_r, head_c)
+        self.view_radius = view_radius
+        
+    def draw(self, surface: pg.Surface, grid: grid_Grid) -> None:
+        hr, hc = self.get_head().get_pos()
+        r_from, r_to = max(hr - self.view_radius, 0), min(hr + self.view_radius, grid.rows - 1)
+        c_from, c_to = max(hc - self.view_radius, 0), min(hc + self.view_radius, grid.clmns - 1)
+        
+        self.get_head().draw(surface, grid)
+        for p in self.get_tail():
+            r, c = p.get_pos()
+            if r < r_from or r > r_to\
+                or c < c_from or c > c_to:
+                continue
+            p.draw(surface, grid)
