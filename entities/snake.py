@@ -3,7 +3,9 @@ import entities as ents
 
 from enum import IntEnum
 
-import grid
+from grid import Grid as grid_Grid
+from grid import EmbededGrid as grid_EmbededGrid
+from grid import Builder as grid_Builder
 
 class BodyPart(ents.BaseEntity):
     def __init__(self, row: int, clmn: int) -> None:
@@ -29,11 +31,11 @@ class ColorBodyPart(BodyPart):
     def update(self, t_elapsed: float) -> bool:
         pass
     
-    def draw(self, surface: pg.Surface, grid: grid.Grid) -> None:
+    def draw(self, surface: pg.Surface, grid: grid_Grid) -> None:
         grid.draw_colored_cells_to_screen(surface, [(self.row, self.clmn, self.color)])
     
 class GOLBodyPart(BodyPart):
-    def __init__(self, row: int, clmn: int, parent_grid: grid.Grid) -> None:
+    def __init__(self, row: int, clmn: int, parent_grid: grid_Grid) -> None:
         super().__init__(row, clmn)
         self.ups = 10
         self.t_acc = 0
@@ -63,19 +65,19 @@ class GOLBodyPart(BodyPart):
         super().set_pos(row, clmn)
         self.e_grid.move_to(row, clmn)
     
-    def draw(self, surface: pg.Surface, grid: grid.Grid) -> None:
+    def draw(self, surface: pg.Surface, grid: grid_Grid) -> None:
         self.e_grid.draw_bkgd_and_border(surface)
         self.gol_table.draw(self.e_grid, surface)
     
-    def get_e_grid(self) -> grid.EmbededGrid:
-        builder = grid.Builder()\
+    def get_e_grid(self) -> grid_EmbededGrid:
+        builder = grid_Builder()\
             .set_clmns_and_rows_count(self.table_clmns, self.table_rows)\
             .set_border_color_and_width((0, 255, 0), 1)\
             .set_bkgd_color(self.bkd_clr)\
             .set_cell_padding(1)\
             .set_color_cells_border_radius(0)\
             
-        e_grid = grid.EmbededGrid(builder, self.parent_grid, self.row, self.clmn)
+        e_grid = grid_EmbededGrid(builder, self.parent_grid, self.row, self.clmn)
         
         return e_grid
 
@@ -109,7 +111,7 @@ class Snake(ents.BaseEntity):
         
         return True
         
-    def draw(self, surface: pg.Surface, grid: grid.Grid) -> None:
+    def draw(self, surface: pg.Surface, grid: grid_Grid) -> None:
         for part in self.body: part.draw(surface, grid)
     
     def add_body_part(self, p: BodyPart) -> 'Snake':
