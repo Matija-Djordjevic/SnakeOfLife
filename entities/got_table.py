@@ -8,7 +8,7 @@ from typing import Optional
 
 import pygame as pg
 
-import grid 
+from grid import Grid as grid_Grid
 
 class GOLTable():
     ALIVE = True
@@ -28,7 +28,7 @@ class GOLTable():
 
     def evolve(self) -> None: Advancer.evolve(self)
 
-    def draw(self, grid: grid.Grid, surface: pg.Surface) -> None: Drawer.draw(self, grid, surface)
+    def draw(self, grid: grid_Grid, surface: pg.Surface) -> None: Drawer.draw(self, grid, surface)
 
     @staticmethod
     def try_load_from_binary(f_path: str) -> Optional['GOLTable']: return Loader.try_load_from_binary(f_path)
@@ -234,7 +234,7 @@ class Loader():
 # beutify!
 class Drawer():
     @staticmethod
-    def draw(table: GOLTable, grid: grid.Grid, surface: pg.Surface) -> None:
+    def draw(table: GOLTable, grid: grid_Grid, surface: pg.Surface) -> None:
         mtrx = table.matrix
         h, w = mtrx.shape
         
