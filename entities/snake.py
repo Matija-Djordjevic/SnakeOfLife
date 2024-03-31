@@ -7,21 +7,19 @@ from grid import Grid as grid_Grid
 from grid import EmbededGrid as grid_EmbededGrid
 from grid import Builder as grid_Builder
 
+from abc import ABC, abstractmethod
+
 class BodyPart(ents.BaseEntity):
     def __init__(self, row: int, clmn: int) -> None:
         self.row, self.clmn = row, clmn
         super().__init__()
 
-    def move(self, row: int, clmn: int) -> tuple[int, int]:
-        oldr, oldc = self.row, self.clmn
-        self.row, self.clmn = row, clmn
-        return oldr, oldc
-    
     def get_pos(self) -> tuple[int, int]:
         return self.row, self.clmn
     
-    def set_pos(self, row: int, clmn: int) -> None:
-        self.row, self.clmn = row, clmn
+    @abstractmethod
+    def set_pos(self, row_clmn: tuple[int, int]) -> tuple[int, int]:
+        pass
     
 class ColorBodyPart(BodyPart):
     def __init__(self, row: int, clmn: int, color: tuple[int, int, int]) -> None:
@@ -30,6 +28,11 @@ class ColorBodyPart(BodyPart):
 
     def update(self, t_elapsed: float) -> bool:
         pass
+    
+    def set_pos(self, row_clmn: tuple[int, int]) -> tuple[int, int]:
+        old_pos = self.get_pos()
+        self.row, self.clmn = row_clmn
+        return old_pos
     
     def draw(self, surface: pg.Surface, grid: grid_Grid) -> None:
         grid.draw_colored_cells_to_screen(surface, [(self.row, self.clmn, self.color)])
@@ -61,9 +64,11 @@ class GOLBodyPart(BodyPart):
         self.e_grid.move_to(row, clmn)
         return oldr, oldc
     
-    def set_pos(self, row: int, clmn: int):
-        super().set_pos(row, clmn)
-        self.e_grid.move_to(row, clmn)
+    def set_pos(self, row_clmn: tuple[int, int]) -> tuple[int, int]:
+        old_pos = self.get_pos()
+        self.row, self.clmn = row_clmn
+        self.e_grid.move_to(*(row_clmn))
+        return old_pos
     
     def draw(self, surface: pg.Surface, grid: grid_Grid) -> None:
         self.e_grid.draw_bkgd_and_border(surface)
@@ -116,7 +121,7 @@ class Snake(ents.BaseEntity):
     
     def add_body_part(self, p: BodyPart) -> 'Snake':
         self.body.append(p)
-        p.set_pos(*self.body[-1].get_pos())
+        p.set_pos(self.body[-1].get_pos())
         
         return self
     
@@ -126,7 +131,7 @@ class Snake(ents.BaseEntity):
         next_row, next_clmn = row, clmn
 
         for part in body:
-            next_row, next_clmn = part.move(next_row, next_clmn)
+            next_row, next_clmn = part.set_pos((next_row, next_clmn))
             
         return self
  
