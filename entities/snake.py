@@ -146,13 +146,13 @@ class SnakeDirection(IntEnum):
     RIGHT = 3 
             
 class MovingSnake(Snake):
-    _INC_DIRS = [
+    _NC_DIRS = [ # non competable dirrections
         SnakeDirection.DOWN,
         SnakeDirection.RIGHT,
         SnakeDirection.UP,
         SnakeDirection.LEFT
     ]
-    _DIR_OFFS = [
+    _OFFS = [
         (-1, 0),
         (0, -1),
         (1, 0),
@@ -168,8 +168,7 @@ class MovingSnake(Snake):
         self.dir = SnakeDirection.DOWN 
 
     def try_cnage_dir(self, nd: SnakeDirection) -> bool:
-        if MovingSnake._INC_DIRS[nd] == self.dir:
-            return False
+        if MovingSnake._NC_DIRS[nd] == self.dir: return False
         self.dir = nd
         return True
 
@@ -177,7 +176,7 @@ class MovingSnake(Snake):
         super().update(t_elapsed)
         self.t_acc += t_elapsed
         while self.t_acc > self.t_slice:
-            oh, ow = MovingSnake._DIR_OFFS[self.dir]
+            oh, ow = MovingSnake._OFFS[self.dir]
             h, w = self.head.get_pos()
             self.move(h + oh, w + ow)
 

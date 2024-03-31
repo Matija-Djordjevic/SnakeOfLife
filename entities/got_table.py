@@ -39,6 +39,8 @@ class GOLTable():
 
     def randomize_cells(self) -> None: self.matrix = np.random.randint(0, 2, size=self.matrix.shape, dtype=np.bool_)
 
+    def generations_differ(self) -> bool | None: return Advancer.generations_differ(self.generation_count, self.matrix, self.t_matrix)
+    
     def set_cells_to_alive(self, cells) -> None:
         for row, clmn in cells: self.matrix[row][clmn] = GOLTable.ALIVE
     
@@ -46,7 +48,7 @@ class GOLTable():
         for row, clmn in cells: self.matrix[row][clmn] = GOLTable.DEAD
     
     def flip_cells(self, cells) -> None:
-        for row, clmn in cells: self.matrix[row][clmn] = not self.table[row][clmn]    
+        for row, clmn in cells: self.matrix[row][clmn] = not self.matrix[row][clmn]    
 
     def __str__(self) -> str:
         frame_char = '#'
@@ -96,23 +98,22 @@ class Advancer():
             nbs = Advancer.neighbours_count_parimeter(table, 0, clmn)
             t_matrix[0][clmn] = Advancer.next_cell_state(matrix[0][clmn], nbs)
         
-        #last row
+        # last row
         for clmn in range(w):
             nbs = Advancer.neighbours_count_parimeter(table, h - 1, clmn)
             t_matrix[h - 1][clmn] = Advancer.next_cell_state(matrix[h - 1][clmn], nbs)
 
-        #first clmn
+        # first clmn
         for row in range(h):
             nbs = Advancer.neighbours_count_parimeter(table, row, 0)
             t_matrix[row][0] = Advancer.next_cell_state(matrix[row][0], nbs)
 
-        #last clmn
+        # last clmn
         for row in range(h):
             nbs = Advancer.neighbours_count_parimeter(table, row, w - 1)
             t_matrix[row][w - 1] = Advancer.next_cell_state(matrix[row][w - 1], nbs)
         
         # rest of the matrix
-        # here we will waste most of the time!
         Advancer.advance_inner_matrix(table.matrix, t_matrix)
 
     @staticmethod
@@ -145,7 +146,7 @@ class Advancer():
     
     @staticmethod
     @njit
-    def advance_inner_matrix(matrix: npt.NDArray[np.bool_], tmp_matrix: npt.NDArray[np.bool_]) -> None:
+    def advance_inner_matrix(matrix: npt.NDArray[np.bool_], t_matrix: npt.NDArray[np.bool_]) -> None:
         OFFSETS = [
             [-1, -1],
             [-1, 0],
@@ -174,7 +175,7 @@ class Advancer():
                 if not is_alive and nbr_c == 3:
                     is_alive = ALIVE
                 
-                tmp_matrix[row][clmn] = is_alive
+                t_matrix[row][clmn] = is_alive
     
     @staticmethod
     def next_cell_state(is_alive: bool, alive_nbs: int) -> bool:
@@ -192,6 +193,11 @@ class Advancer():
     def are_invalid_coords(table: GOLTable, row: int, clmn: int) -> bool:
         h, w = table.matrix.shape
         return row < 0 or row >= h or clmn < 0 or clmn >= w
+
+    @staticmethod
+    def generations_differ(generation_count: int, matrix: npt.NDArray[np.bool_], t_matrix: npt.NDArray[np.bool_]) -> bool | None:
+        if generation_count == 1: return None
+        return not (matrix==t_matrix).all()
 
 class Loader():
     @staticmethod
