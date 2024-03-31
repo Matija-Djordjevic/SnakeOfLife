@@ -4,8 +4,13 @@ import pygame as pg
 
 import numpy as np 
 
-import entities as ents
-import grid
+from grid import Grid as gird_Grid
+from grid import Builder as grid_Builder
+
+from entities import GOLBodyPart as entities_GOLBodyPart
+from entities import MovingSnake as entities_MovingSnake
+from entities import SnakeDirection as entities_SnakeDirection
+from entities import GOLTable as entities_GOLTable
 
 class SnakeOfLifeDemoLevel(BaseLevel):
     def __init__(self, rows: int, clmns: int, req_width: int, req_height: int) -> None:
@@ -18,12 +23,12 @@ class SnakeOfLifeDemoLevel(BaseLevel):
         
         self.surface = pg.display.set_mode(self.grid.get_actual_grid_size())
         
-        self.snake = ents.MovingSnake(0, 0)\
-            .add_body_part(ents.GOLBodyPart(0, 1, self.grid))\
-            .add_body_part(ents.GOLBodyPart(0, 2, self.grid))\
-            .add_body_part(ents.GOLBodyPart(0, 3, self.grid))\
-            .add_body_part(ents.GOLBodyPart(0, 4, self.grid))\
-            .add_body_part(ents.GOLBodyPart(0, 5, self.grid))
+        self.snake = entities_MovingSnake(0, 0)\
+            .add_body_part(entities_GOLBodyPart(0, 1, self.grid))\
+            .add_body_part(entities_GOLBodyPart(0, 2, self.grid))\
+            .add_body_part(entities_GOLBodyPart(0, 3, self.grid))\
+            .add_body_part(entities_GOLBodyPart(0, 4, self.grid))\
+            .add_body_part(entities_GOLBodyPart(0, 5, self.grid))
         
         self.ups = 10
         self.t_acc = 0
@@ -31,10 +36,10 @@ class SnakeOfLifeDemoLevel(BaseLevel):
         self.food = None
     
     def warmup(self):
-        ents.GOLTable(10, 10, False, (0, 0, 0), (0, 0, 0)).evolve()
+        entities_GOLTable(10, 10, False, (0, 0, 0), (0, 0, 0)).evolve()
     
-    def init_grid(self) -> grid.Grid:
-        builder = grid.Builder()\
+    def init_grid(self) -> gird_Grid:
+        builder = grid_Builder()\
             .set_clmns_and_rows_count(self.clmns, self.rows)\
             .set_available_width_and_height(self.req_width, self.req_height)\
             .set_draw_offsets(0, 0)\
@@ -45,16 +50,16 @@ class SnakeOfLifeDemoLevel(BaseLevel):
             .keep_same_cell_width_and_height()\
             .force_consistent_cell_padding()
 
-        return grid.Grid(builder)
+        return gird_Grid(builder)
         
     def handle_events(self, events: list[pg.event.Event]) -> None:
         for event in events:
             if event.type == pg.KEYDOWN:
                 match event.key:
-                    case pg.K_s: self.snake.try_cnage_dir(ents.SnakeDirection.DOWN)
-                    case pg.K_d: self.snake.try_cnage_dir(ents.SnakeDirection.RIGHT)
-                    case pg.K_w: self.snake.try_cnage_dir(ents.SnakeDirection.UP)
-                    case pg.K_a: self.snake.try_cnage_dir(ents.SnakeDirection.LEFT)
+                    case pg.K_s: self.snake.try_cnage_dir(entities_SnakeDirection.DOWN)
+                    case pg.K_d: self.snake.try_cnage_dir(entities_SnakeDirection.RIGHT)
+                    case pg.K_w: self.snake.try_cnage_dir(entities_SnakeDirection.UP)
+                    case pg.K_a: self.snake.try_cnage_dir(entities_SnakeDirection.LEFT)
         
     def update(self, t_elapsed: float, events: list[pg.event.Event]) -> bool:
         snake = self.snake

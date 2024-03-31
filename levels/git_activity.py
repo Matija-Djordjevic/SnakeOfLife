@@ -1,11 +1,13 @@
 import pygame as pg
 
-import levels
 import os
-import entities as ents
-import grid 
 
-class GitActivity(levels.BaseLevel):
+from entities import GOLTable as entities_GOLTable
+from grid import Grid as gird_Grid
+from grid import Builder as grid_Builder
+from levels import BaseLevel as levels_BaseLevel
+
+class GitActivity(levels_BaseLevel):
     def __init__(self) -> None:
         super().__init__()
         self.warmup()
@@ -17,18 +19,18 @@ class GitActivity(levels.BaseLevel):
         self.grid = self.init_grid()
         self.dead = 22, 27, 34
         self.alive = 57, 211, 83
-        self.table = ents.GOLTable(self.clmns, self.rows, True, self.alive, self.dead)
+        self.table = entities_GOLTable(self.clmns, self.rows, True, self.alive, self.dead)
         self.table.randomize_cells()
-        #self.table = ents.GOLTable.try_load_from_binary()
+        #self.table = entities_GOLTable.try_load_from_binary()
         
         self.t_acc = 0.
         self.ups = 7
 
     def warmup(self):
-        ents.GOLTable(10, 10, False, (0, 0, 0), (0, 0, 0)).evolve()
+        entities_GOLTable(10, 10, False, (0, 0, 0), (0, 0, 0)).evolve()
         
-    def init_grid(self) -> grid.Grid:
-        builder = grid.Builder()\
+    def init_grid(self) -> gird_Grid:
+        builder = grid_Builder()\
             .set_clmns_and_rows_count(self.clmns, self.rows)\
             .set_available_width_and_height(1696, 224)\
             .set_draw_offsets(119, 78)\
@@ -39,7 +41,7 @@ class GitActivity(levels.BaseLevel):
             .keep_same_cell_width_and_height()\
             .force_consistent_cell_padding()
         
-        return grid.Grid(builder)
+        return gird_Grid(builder)
             
     def update(self, t_elapsed: float, events: list[pg.event.Event]) -> bool:
         self.t_acc += t_elapsed

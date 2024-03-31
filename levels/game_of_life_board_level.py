@@ -2,15 +2,17 @@ import sys
 from levels.base_level import BaseLevel
 import pygame as pg
 
-import entities as ents
-import grid
+from entities import GOLTable as entities_GOLTable
+from grid import Grid as grid_Grid
+from grid import Builder as grid_Builder
+
 class GameOfLifeBoardLevel(BaseLevel):
     def __init__(self, rows: int, clmns: int, width: int, height: int) -> None:
         
         self.warmup()
         self.req_width, self.req_height = width, height
         self.rows, self.clmns = rows, clmns
-        self.t: ents.GOLTable = ents.GOLTable(self.clmns, self.rows, True, (57, 211, 83), (22, 27, 34))
+        self.t: entities_GOLTable = entities_GOLTable(self.clmns, self.rows, True, (57, 211, 83), (22, 27, 34))
         self.bkd_clr = (255, 255, 255)
         self.t.randomize_cells()
         self.grid = self.init_grid()
@@ -25,8 +27,8 @@ class GameOfLifeBoardLevel(BaseLevel):
         
         self.show_gen_count = True
 
-    def init_grid(self) -> grid.Grid:
-        builder = grid.Builder()\
+    def init_grid(self) -> grid_Grid:
+        builder = grid_Builder()\
             .set_clmns_and_rows_count(self.clmns, self.rows)\
             .set_available_width_and_height(self.req_width, self.req_height)\
             .set_draw_offsets(0, 0)\
@@ -37,7 +39,7 @@ class GameOfLifeBoardLevel(BaseLevel):
             .keep_same_cell_width_and_height()\
             .force_consistent_cell_padding()
         
-        return grid.Grid(builder)
+        return grid_Grid(builder)
         
     def update(self, t_elapsed: float, events: list[pg.event.Event]) -> bool:
         self.const_events(events)
@@ -67,4 +69,4 @@ class GameOfLifeBoardLevel(BaseLevel):
         self.surface.blit(img, (bw, h - bw - self.font_size))
     
     def warmup(self):
-        ents.GOLTable(10, 10, False, (0, 0, 0), (0, 0, 0)).evolve()
+        entities_GOLTable(10, 10, False, (0, 0, 0), (0, 0, 0)).evolve()

@@ -1,6 +1,6 @@
 import pygame as pg
 
-from levels.base_level import BaseLevel
+from levels import BaseLevel as levels_BaseLevel
 
 _BLACK = (0, 0, 0)
 _WHITE = (255, 255, 255)
@@ -16,7 +16,7 @@ class _FontInfo:
         self.bold = bold
 
 class DevLevelWrapper():
-    def __init__(self, level: BaseLevel, clock: pg.time.Clock) -> None:
+    def __init__(self, level: levels_BaseLevel, clock: pg.time.Clock) -> None:
         self.level = level
         self.clock = clock
         
