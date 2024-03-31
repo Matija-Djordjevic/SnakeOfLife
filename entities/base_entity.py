@@ -1,10 +1,13 @@
+from abc import ABC, abstractmethod
 
 import grid
 import pygame as pg
 
-class BaseEntity:
+class BaseEntity(ABC):
+    @abstractmethod
     def update(self, t_elapsed: float) -> bool:
-        raise NotImplemented
-    
+        pass
+
+    @abstractmethod
     def draw(self, surface: pg.Surface, grid: grid.Grid) -> None:
-        raise NotImplemented
+        pass
