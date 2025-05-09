@@ -1,1 +1,1 @@
-![Four gliders in action](assets/gliders.gif)
+![Four gliders in action](assets/loadingsnake.gif)
