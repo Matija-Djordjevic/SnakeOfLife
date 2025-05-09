@@ -1,1 +1,1 @@
-Doc comming soon!
+![Four gliders in action](assets/gliders.gif)
