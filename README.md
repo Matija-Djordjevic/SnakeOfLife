@@ -5,6 +5,7 @@
 
 ![Four gliders in action](assets/GitOfTruth.gif)
 # Snake of Life 🐍 🟩
+
 ⚠️ Work in Progress
 
 Hybrid of Conway’s Game of Life and classic Snake
