@@ -50,7 +50,7 @@ python main.py [-l LEVEL]
 * W/A/S/D: steer the snake  
 * F1–F5: show/hide the stats overlay 
 
-![Four gliders in action](assets/PendingSnake.gif)
+![Four gliders in action](assets/PendingSnakee.gif)
 
 
 </details>
