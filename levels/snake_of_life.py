@@ -25,30 +25,18 @@ class SnakeOfLifeDemoLevel(BaseLevel):
         
         self.surface = pg.display.set_mode(self.grid.get_actual_grid_size())
         
-        self.snake = entities_FogSnake(0, 0, 1)\
+        self.snake = entities_MovingSnake(1, 0)\
             .add_parts([
                 entities_GOLBodyPart(0, 1, self.grid),
                 entities_GOLBodyPart(0, 2, self.grid),
                 entities_GOLBodyPart(0, 3, self.grid),
-                entities_ColorBodyPart(0, 4, (1, 123, 232)),
-                entities_ColorBodyPart(0, 4, (1, 123, 232)),
-                entities_ColorBodyPart(0, 4, (1, 123, 232)),
-                entities_ColorBodyPart(0, 4, (1, 123, 232)),
-                entities_ColorBodyPart(0, 4, (1, 123, 232)),
                 entities_GOLBodyPart(0, 5, self.grid),
-                entities_GOLBodyPart(0, 6, self.grid),
-                entities_GOLBodyPart(0, 6, self.grid),
-                entities_GOLBodyPart(0, 6, self.grid),
-                entities_GOLBodyPart(0, 6, self.grid),
-                entities_GOLBodyPart(0, 6, self.grid),
-                entities_GOLBodyPart(0, 6, self.grid),
-                entities_GOLBodyPart(0, 6, self.grid),
                 entities_GOLBodyPart(0, 6, self.grid),
                 entities_GOLBodyPart(0, 6, self.grid),
                 entities_GOLBodyPart(0, 6, self.grid)
             ])
-        self.ups = 10
         self.t_acc = 0
+        self.snake.try_cnage_dir(entities_SnakeDirection.RIGHT)
         
         self.food = None
     

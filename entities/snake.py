@@ -2,6 +2,7 @@ import pygame as pg
 import entities as ents
 
 from enum import IntEnum
+from itertools import chain
 
 from grid import Grid as grid_Grid
 from grid import EmbededGrid as grid_EmbededGrid
@@ -43,21 +44,39 @@ class ColorBodyPart(BodyPart):
     
     def draw(self, surface: pg.Surface, grid: grid_Grid) -> None:
         grid.draw_colored_cells_to_screen(surface, [(self.row, self.clmn, self.color)])
-    
+
+
+
 class GOLBodyPart(BodyPart):
+    count = 0
+    
     def __init__(self, row: int, clmn: int, parent_grid: grid_Grid) -> None:
         super().__init__(row, clmn)
-        self.ups = 10
+        
+        self.ups = 6
         self.t_acc = 0
         self.bkd_clr = (0, 0, 0)
+
+
+        alive_cells = [
+            # Classic glider in a 12×12 grid (top‐left corner)
+            (0, 1),
+            (1, 2),
+            (2, 0), (2, 1), (2, 2)
+        ]
+
         
-        self.table_rows, self.table_clmns = 10, 10
-        self.gol_table = ents.GOLTable(self.table_clmns, self.table_rows, False, (57, 211, 83), self.bkd_clr)
-        self.gol_table.randomize_cells()
+        self.table_rows, self.table_clmns = 12, 12
+        self.gol_table = ents.GOLTable(self.table_clmns, self.table_rows, True, (0, 255, 0), self.bkd_clr)
+
+
+        self.gol_table.randomize_cells() if type(self).count is not 5 else self.gol_table.set_cells_to_alive(alive_cells)
+
+        type(self).count += 1
         
         self.parent_grid = parent_grid
         self.e_grid = self.get_e_grid()
-        
+
     def update(self, t_elapsed: float) -> bool:
         self.t_acc += t_elapsed
         t_slice = 1. / self.ups
@@ -74,7 +93,7 @@ class GOLBodyPart(BodyPart):
     def draw(self, surface: pg.Surface, grid: grid_Grid) -> None:
         self.e_grid.draw_bkgd_and_border(surface)
         self.gol_table.draw(self.e_grid, surface)
-    
+
     def get_e_grid(self) -> grid_EmbededGrid:
         builder = grid_Builder()\
             .set_clmns_and_rows_count(self.table_clmns, self.table_rows)\
@@ -113,7 +132,8 @@ class Snake(ents.BaseEntity):
         return self.body[0]
     
     def update(self, t_elapsed: float) -> bool:
-        for part in self.body: part.update(t_elapsed)
+        for part in chain(self.body, self.pending_body):
+            part.update(t_elapsed)
         return True
         
     def draw(self, surface: pg.Surface, grid: grid_Grid) -> None:

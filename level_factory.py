@@ -17,7 +17,7 @@ class LevelFactory():
         return lsl.GitActivity()
     
     def _create_snake_of_life_demo(self) -> lsl.SnakeOfLifeDemoLevel:
-        return lsl.SnakeOfLifeDemoLevel(15, 15, 1300, 1300)
+        return lsl.SnakeOfLifeDemoLevel(12, 12, 1300, 1300)
     
     def _create_game_of_life_demo(self) -> lsl.GameOfLifeBoardLevel:
         return lsl.GameOfLifeBoardLevel(90, 90, 1300, 1300)

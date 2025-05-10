@@ -19,7 +19,7 @@ class GOLTable():
         self.alive_c = alive_color
         self.dead_c = dead_color
         self.matrix = np.zeros(shape=(rows, clmns), dtype=np.bool_)
-        self.t_matrix = self.matrix[:]
+        self.t_matrix = self.matrix.copy()
         
         self.generation_count = 1
 

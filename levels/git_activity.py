@@ -24,7 +24,7 @@ class GitActivity(levels_BaseLevel):
         #self.table = entities_GOLTable.try_load_from_binary()
         
         self.t_acc = 0.
-        self.ups = 7
+        self.ups = 1.5
 
     def warmup(self):
         entities_GOLTable(10, 10, False, (0, 0, 0), (0, 0, 0)).evolve()

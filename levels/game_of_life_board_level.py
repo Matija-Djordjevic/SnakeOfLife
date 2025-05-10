@@ -18,7 +18,7 @@ class GameOfLifeBoardLevel(BaseLevel):
         self.grid = self.init_grid()
         self.surface = pg.display.set_mode(self.grid.get_actual_grid_size())
         
-        self.ups = 10
+        self.ups = 5
         self.t_acc = 0
 
         self.font_size = 45
